@@ -249,8 +249,8 @@ public class StudentController extends HttpServlet {
     private void sortStudents(HttpServletRequest request, HttpServletResponse response) 
         throws ServletException, IOException {
     
-    String sortBy = request.getParameter("sortBy"); // e.g., "full_name"
-    String order = request.getParameter("order");   // "asc" or "desc"
+    String sortBy = request.getParameter("sortBy"); 
+    String order = request.getParameter("order");   
 
     List<Student> students = studentDAO.getStudentsSorted(sortBy, order);
 
@@ -299,9 +299,8 @@ private void filterAndSortStudents(HttpServletRequest request, HttpServletRespon
         students = studentDAO.getStudentsFiltered(major, sortBy, order);
         request.setAttribute("selectedMajor", major);
     } else {
-        // No major filter → show all students with sorting
         students = studentDAO.getStudentsSorted(sortBy, order);
-        request.setAttribute("selectedMajor", ""); // no filter selected
+        request.setAttribute("selectedMajor", ""); 
     }
 
     request.setAttribute("students", students);
@@ -315,7 +314,6 @@ private void filterAndSortStudents(HttpServletRequest request, HttpServletRespon
 private void listStudents(HttpServletRequest request, HttpServletResponse response) 
         throws ServletException, IOException {
 
-    // Get optional parameters
     String sortBy = request.getParameter("sortBy");
     String order = request.getParameter("order");
     String major = request.getParameter("major");
@@ -326,7 +324,6 @@ private void listStudents(HttpServletRequest request, HttpServletResponse respon
 
     List<Student> students;
 
-    // Check if major filter is applied
     if (major != null && !major.isEmpty()) {
         // Filter by major with sorting
         students = studentDAO.getStudentsFiltered(major, sortBy, order);
@@ -337,7 +334,6 @@ private void listStudents(HttpServletRequest request, HttpServletResponse respon
         request.setAttribute("selectedMajor", "");
     }
 
-    // Set attributes for view
     request.setAttribute("students", students);
     request.setAttribute("sortBy", sortBy);
     request.setAttribute("order", order);

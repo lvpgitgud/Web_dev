@@ -73,6 +73,16 @@
             transition: background 0.3s;
         }
         
+        .btn-change-pass {
+            padding: 8px 20px;
+            background: blue;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+        
         .btn-logout:hover {
             background: #c0392b;
         }
@@ -201,6 +211,7 @@
                 </span>
             </div>
             <a href="logout" class="btn-logout">Logout</a>
+            <a href="change_password" class="btn-change-pass">Change Password</a>
         </div>
     </div>
     

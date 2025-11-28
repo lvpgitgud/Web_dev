@@ -23,7 +23,6 @@ import java.io.IOException;
 @WebFilter(filterName = "AuthFilter", urlPatterns = {"/*"})
 public class AuthFilter implements Filter {
     
-    // Public URLs that don't require authentication
     private static final String[] PUBLIC_URLS = {
         "/login",
         "/logout",
@@ -50,23 +49,18 @@ public class AuthFilter implements Filter {
         String requestURI = httpRequest.getRequestURI();
         String contextPath = httpRequest.getContextPath();
         String path = requestURI.substring(contextPath.length());
-        
-        // Check if this is a public URL
+
         if (isPublicUrl(path)) {
-            // Allow access to public URLs
             chain.doFilter(request, response);
             return;
         }
         
-        // Check if user is logged in
         HttpSession session = httpRequest.getSession(false);
         boolean isLoggedIn = (session != null && session.getAttribute("user") != null);
         
         if (isLoggedIn) {
-            // User is logged in, allow access
             chain.doFilter(request, response);
         } else {
-            // User not logged in, redirect to login
             String loginURL = contextPath + "/login";
             httpResponse.sendRedirect(loginURL);
         }

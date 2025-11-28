@@ -57,7 +57,7 @@ public class StudentDAO {
         return students;
     }
     
-    // Get student by ID
+ 
     public Student getStudentById(int id) {
         String sql = "SELECT * FROM students WHERE id = ?";
         

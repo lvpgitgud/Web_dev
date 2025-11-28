@@ -1,9 +1,3 @@
-<%-- 
-    Document   : student-list
-    Created on : Nov 21, 2025, 5:20:13 PM
-    Author     : Admin
---%>
-
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
@@ -12,8 +6,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student List - MVC</title>
+
     <style>
-        * {
+                * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
@@ -171,41 +166,62 @@
             color: white;
             border: 1px solid #4CAF50;
         }
+        .role-badge {
+            padding: 4px 10px;
+            color: white;
+            border-radius: 5px;
+            font-size: 12px;
+            margin-left: 5px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+        .role-admin { background: #d9534f; }
+        .role-user { background: #0275d8; }
+
     </style>
 </head>
 <body>
+
+
     <div class="container">
-        <h1>📚 Student Management System</h1>
-        <p class="subtitle">MVC Pattern with Jakarta EE & JSTL</p>
-        
+
+        <h1>📚 Student Management System <span class="role-badge role-${sessionScope.role}">
+                ${sessionScope.role}
+            </span></h1>
+        <p class="subtitle">       
+            <span>Welcome, ${sessionScope.fullName}</span>
+            
+
+        </p>
+
         <!-- Success Message -->
         <c:if test="${not empty param.message}">
-            <div class="message success">
-                ✅ ${param.message}
-            </div>
+            <div class="message success">✅ ${param.message}</div>
         </c:if>
-        
-        <!-- Error Message -->
+
+        <!-- Error Message (AdminFilter error) -->
         <c:if test="${not empty param.error}">
-            <div class="message error">
-                ❌ ${param.error}
-            </div>
+            <div class="message error">❌ ${param.error}</div>
         </c:if>
-        
-        <!-- Add New Student Button -->
+
         <div style="margin-bottom: 20px;">
+
             <c:if test="${sessionScope.role eq 'admin'}">
                 <a href="student?action=new" class="btn btn-primary">
                     ➕ Add New Student
                 </a>
             </c:if>
-    
-                <a href="export" class="btn btn-primary">
-                    ⬇️ Export to Excel
-                </a>
+            <a href="dashboard" class="btn btn-primary">Dashboard</a>
+            <a href="logout" class="btn btn-primary">Logout</a>
 
+            <a href="export" class="btn btn-primary">
+                ⬇️ Export to Excel
+            </a>
+            
+            
         </div>
-                <!-- Search Box -->
+
+        <!-- Search Box (unchanged) -->
         <div class="search-box" style="margin: 20px 0; display: flex; align-items: center; gap: 10px;">
             <form action="student" method="get">
                 <input type="hidden" name="action" value="listCombined">
@@ -223,119 +239,99 @@
                 <input type="hidden" name="order" value="${order}">
 
                 <button type="submit" class="btn btn-primary">🔍 Search</button>
+
                 <c:if test="${not empty keyword or not empty selectedMajor}">
-                    <a href="student?action=listCombined" class = "btn btn-secondary">Clear Filters</a>
+                    <a href="student?action=listCombined" class="btn btn-secondary">Clear Filters</a>
                 </c:if>
             </form>
         </div>
+
         <c:if test="${not empty keyword}">
             <p style="margin-bottom: 15px; color: #444;">
                 🔎 Search results for: <strong>${keyword}</strong>
             </p>
         </c:if>
-        
 
-
-        
         <!-- Student Table -->
         <c:choose>
         <c:when test="${not empty students}">
             <table>
                 <thead>
                     <tr>
-                        <!-- ID -->
-                        <th>
-                            <a href="student?action=listCombined&sortBy=id&order=${sortBy == 'id' && order == 'asc' ? 'desc' : 'asc'}&keyword=${keyword}&major=${selectedMajor}">
-                                ID
-                                <c:if test="${sortBy == 'id'}">${order == 'asc' ? '▲' : '▼'}</c:if>
-                            </a>
-                        </th>
+                        <th>ID</th>
+                        <th>Code</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Major</th>
 
-                        <!-- Student Code -->
-                        <th>
-                            <a href="student?action=listCombined&sortBy=student_code&order=${sortBy == 'student_code' && order == 'asc' ? 'desc' : 'asc'}&keyword=${keyword}&major=${selectedMajor}">
-                                Code
-                                <c:if test="${sortBy == 'student_code'}">${order == 'asc' ? '▲' : '▼'}</c:if>
-                            </a>
-                        </th>
-
-                        <!-- Full Name -->
-                        <th>
-                            <a href="student?action=listCombined&sortBy=full_name&order=${sortBy == 'full_name' && order == 'asc' ? 'desc' : 'asc'}&keyword=${keyword}&major=${selectedMajor}">
-                                Name
-                                <c:if test="${sortBy == 'full_name'}">${order == 'asc' ? '▲' : '▼'}</c:if>
-                            </a>
-                        </th>
-
-                        <!-- Email -->
-                        <th>
-                            <a href="student?action=listCombined&sortBy=email&order=${sortBy == 'email' && order == 'asc' ? 'desc' : 'asc'}&keyword=${keyword}&major=${selectedMajor}">
-                                Email
-                                <c:if test="${sortBy == 'email'}">${order == 'asc' ? '▲' : '▼'}</c:if>
-                            </a>
-                        </th>
-
-                        <!-- Major -->
-                        <th>
-                            <a href="student?action=listCombined&sortBy=major&order=${sortBy == 'major' && order == 'asc' ? 'desc' : 'asc'}&keyword=${keyword}&major=${selectedMajor}">
-                                Major
-                                <c:if test="${sortBy == 'major'}">${order == 'asc' ? '▲' : '▼'}</c:if>
-                            </a>
-                        </th>
-
-
-                        <!-- Actions -->
-                        <th>Actions</th>
+                        <!-- ✅ Show Actions TH only for admin -->
+                        <c:if test="${sessionScope.role eq 'admin'}">
+                            <th>Actions</th>
+                        </c:if>
                     </tr>
                 </thead>
-                    <tbody>
-                        <c:forEach var="student" items="${students}">
-                            <tr>
-                                <td>${student.id}</td>
-                                <td><strong>${student.studentCode}</strong></td>
-                                <td>${student.fullName}</td>
-                                <td>${student.email}</td>
-                                <td>${student.major}</td>
+
+                <tbody>
+                    <c:forEach var="student" items="${students}">
+                        <tr>
+                            <td>${student.id}</td>
+                            <td><strong>${student.studentCode}</strong></td>
+                            <td>${student.fullName}</td>
+                            <td>${student.email}</td>
+                            <td>${student.major}</td>
+
+                            <!-- ✅ Show Edit/Delete only for admin -->
+                            <c:if test="${sessionScope.role eq 'admin'}">
                                 <td>
                                     <div class="actions">
                                         <a href="student?action=edit&id=${student.id}" class="btn btn-secondary">
                                             ✏️ Edit
                                         </a>
-                                        <a href="student?action=delete&id=${student.id}" 
+
+                                        <a href="student?action=delete&id=${student.id}"
                                            class="btn btn-danger"
                                            onclick="return confirm('Are you sure you want to delete this student?')">
                                             🗑️ Delete
                                         </a>
                                     </div>
                                 </td>
-                            </tr>
-                        </c:forEach>
-                    </tbody>
-                </table>
-            </c:when>
-            <c:otherwise>
-                <div class="empty-state">
-                    <div class="empty-state-icon">📭</div>
-                    <h3>No students found</h3>
-                    <p>Start by adding a new student</p>
-                </div>
-            </c:otherwise>
+                            </c:if>
+
+                        </tr>
+                    </c:forEach>
+                </tbody>
+            </table>
+        </c:when>
+
+        <c:otherwise>
+            <div class="empty-state">
+                <div class="empty-state-icon">📭</div>
+                <h3>No students found</h3>
+                <p>Start by adding a new student</p>
+            </div>
+        </c:otherwise>
         </c:choose>
+
     </div>
+
+    <!-- Pagination (unchanged) -->
     <c:if test="${totalPages > 1}">
         <div class="pagination">
             <c:if test="${currentPage > 1}">
                 <a href="student?action=list&page=1">« First</a>
-            </c:if>
-
-            <c:if test="${currentPage > 1}">
                 <a href="student?action=list&page=${currentPage - 1}">‹ Prev</a>
             </c:if>
 
             <c:set var="startPage" value="${currentPage - 2}" />
             <c:set var="endPage" value="${currentPage + 2}" />
-            <c:if test="${startPage < 1}"><c:set var="startPage" value="1" /></c:if>
-            <c:if test="${endPage > totalPages}"><c:set var="endPage" value="${totalPages}" /></c:if>
+
+            <c:if test="${startPage < 1}">
+                <c:set var="startPage" value="1" />
+            </c:if>
+
+            <c:if test="${endPage > totalPages}">
+                <c:set var="endPage" value="${totalPages}" />
+            </c:if>
 
             <c:forEach begin="${startPage}" end="${endPage}" var="i">
                 <c:choose>
@@ -350,9 +346,6 @@
 
             <c:if test="${currentPage < totalPages}">
                 <a href="student?action=list&page=${currentPage + 1}">Next ›</a>
-            </c:if>
-
-            <c:if test="${currentPage < totalPages}">
                 <a href="student?action=list&page=${totalPages}">Last »</a>
             </c:if>
         </div>
@@ -362,5 +355,6 @@
         <c:set var="endRecord" value="${startRecord + students.size() - 1}" />
         <p>Showing ${startRecord}–${endRecord} of ${totalRecords} records</p>
     </c:if>
+
 </body>
 </html>
