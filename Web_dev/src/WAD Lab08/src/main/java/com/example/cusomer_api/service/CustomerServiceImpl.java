@@ -4,13 +4,22 @@ package com.example.cusomer_api.service;
 
 import com.example.cusomer_api.dto.CustomerRequestDTO;
 import com.example.cusomer_api.dto.CustomerResponseDTO;
+import com.example.cusomer_api.dto.CustomerUpdateDTO;
 import com.example.cusomer_api.entity.Customer;
 import com.example.cusomer_api.exception.DuplicateResourceException;
 import com.example.cusomer_api.exception.ResourceNotFoundException;
 import com.example.cusomer_api.repository.CustomerRepository;
+
+
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,14 +34,14 @@ public class CustomerServiceImpl implements CustomerService {
     public CustomerServiceImpl(CustomerRepository customerRepository) {
         this.customerRepository = customerRepository;
     }
-    
+    /* 
     @Override
     public List<CustomerResponseDTO> getAllCustomers() {
         return customerRepository.findAll()
                 .stream()
                 .map(this::convertToResponseDTO)
                 .collect(Collectors.toList());
-    }
+    }*/
     
     @Override
     public CustomerResponseDTO getCustomerById(Long id) {
@@ -133,5 +142,49 @@ public class CustomerServiceImpl implements CustomerService {
         customer.setAddress(dto.getAddress());
         return customer;
     }
+
+    @Override
+    public List<CustomerResponseDTO> advancedSearch(String name, String email, String status){
+        return customerRepository.advancedSearch(name,email,status)
+                .stream()
+                .map(this::convertToResponseDTO)
+                .collect(Collectors.toList());
+        
+    }
+@Override
+public Page<CustomerResponseDTO> getAllCustomers(int page, int size, String sortBy, Sort sort) {
+
+
+    Pageable pageable = PageRequest.of(page, size, sort);
+
+    Page<Customer> result = customerRepository.findAll(pageable);
+
+    return result.map(this::convertToResponseDTO);
+}
+
+    public CustomerResponseDTO partialUpdateCustomer(Long id, CustomerUpdateDTO updateDTO) {
+    Customer customer = customerRepository.findById(id)
+        .orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
+    
+    // Only update non-null fields
+    if (updateDTO.getFullName() != null) {
+        customer.setFullName(updateDTO.getFullName());
+    }
+    if (updateDTO.getEmail() != null) {
+        customer.setEmail(updateDTO.getEmail());
+    }
+    if (updateDTO.getPhone() != null) {
+        customer.setPhone(updateDTO.getPhone());
+    }
+    if (updateDTO.getAddress() != null) {
+        customer.setAddress(updateDTO.getAddress());
+    }
+    if (updateDTO.getStatus() != null) {
+        customer.setStatus(updateDTO.getStatus());
+    }
+    
+    return convertToResponseDTO(customerRepository.save(customer));
+}
+
 }
 
